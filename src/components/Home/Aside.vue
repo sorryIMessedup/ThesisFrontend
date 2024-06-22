@@ -3,22 +3,29 @@
     <div>
       <el-menu default-active="/home/studentManage" class="el-menu-vertical-demo" @open="handleOpen"
         @close="handleClose" router>
-        <el-menu-item index="/home/userManage" :disabled="auth != '3'">
-          <el-icon>
-            <User />
-          </el-icon>
-          <span>用户管理</span>
-        </el-menu-item>
+
+        <el-sub-menu index="">
+          <template #title>
+            <el-icon>
+              <ChatLineSquare />
+            </el-icon>
+            <span>导师申请管理</span>
+          </template>
+          <el-menu-item index="/home/applicationManage1" :disabled="auth != '0'">- 我的导师申请</el-menu-item>
+          <el-menu-item index="/home/applicationManage2" :disabled="auth != '1'">- 申请我的学生</el-menu-item>
+        </el-sub-menu>
+
         <el-sub-menu index="">
           <template #title>
             <el-icon>
               <Calendar />
             </el-icon>
-            <span>申请管理</span>
+            <span>开题报告管理</span>
           </template>
-          <el-menu-item index="/home/applicationManage1" :disabled="auth != '0'">- 我的申请</el-menu-item>
-          <el-menu-item index="/home/applicationManage2" :disabled="auth != '1'">- 申请我的</el-menu-item>
+          <el-menu-item index="/home/proposalManage1" :disabled="auth != '0'">- 我的开题报告</el-menu-item>
+          <el-menu-item index="/home/proposalManage2" :disabled="auth != '1'">- 我审批的开题报告</el-menu-item>
         </el-sub-menu>
+
         <el-sub-menu index="">
           <template #title>
             <el-icon>
@@ -44,6 +51,12 @@
             <DataBoard />
           </el-icon>
           <span>查看所有学生</span>
+        </el-menu-item>
+        <el-menu-item index="/home/userManage" :disabled="auth != '3'">
+          <el-icon>
+            <User />
+          </el-icon>
+          <span>用户管理</span>
         </el-menu-item>
       </el-menu>
     </div>

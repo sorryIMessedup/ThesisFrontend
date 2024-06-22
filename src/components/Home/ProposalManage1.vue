@@ -1,47 +1,42 @@
 <template>
   <el-card>
     <div style="display: flex; align-items: center; justify-content: space-between;">
-      <h1>我的导师申请</h1>
-      <el-button type="primary" @click="dialogVisible = true" :disabled="!canApply">新建申请</el-button>
+      <h1>我的开题报告</h1>
+      <el-button type="primary" @click="dialogVisible = true" :disabled="!canApply">新建开题报告</el-button>
     </div>
-    <span>学生应在<b>2023年11月17日</b>前确定导师，提交《本科生毕业论文指导老师意见表》。<br></span>
-    <span>逾期将无法选择导师，即无法完成毕业论文流程。</span>
+    <span>学生应在<b>2023年12月8日</b>前确定完成《本科生毕业论文（设计）开题报告》。<br></span>
+    <span>在<b>12月27日</b>前应提交开题报告。</span>
     <el-divider />
 
     <el-steps align-center style="max-width: 600px; margin-left: 20px;" :active="active" process-status="wait"
       finish-status="success" :space="300">
-      <el-step title="1. 提交申请" description="请务必提交申请" status="" />
-      <el-step title="2. 等待申请" description="等待导师审批" status="" />
-      <el-step title="3. 完成申请" description="需在规定日期前完成" status="success" v-if="active == 3" />
-      <el-step title="3. 完成申请" description="需在规定日期日前完成" status="error" v-if="active == 4" />
+      <el-step title="1. 提交开题报告" description="请务必提交开题报告" status="" />
+      <el-step title="2. 等待审批" description="等待导师审批开题报告" status="" />
+      <el-step title="3. 完成开题报告" description="需在规定日期前完成" status="success" v-if="active == 3" />
+      <el-step title="3. 完成开题报告" description="需在规定日期日前完成" status="error" v-if="active == 4" />
     </el-steps>
 
     <el-divider />
-    <el-table stripe :data="applicationData.slice((pageNum - 1) * pageSize, pageNum * pageSize)" style="" :border="false">
-      <el-table-column fixed prop="applicationId" label="申请ID" width="150" />
+    <el-table stripe :data="proposalData.slice((pageNum - 1) * pageSize, pageNum * pageSize)" style=""
+      :border="false">
+      <el-table-column fixed prop="proposalId" label="开题报告ID" width="150" />
       <el-table-column prop="teacherId" label="导师ID" width="150" />
       <el-table-column prop="teacherPass" label="状态" width="150" />
       <el-table-column prop="teacherPass" label="操作">
         <template #default="scope">
-          <el-button type="primary" @click="download(scope.row)" size="default">下载申请表</el-button>
+          <el-button type="primary" @click="download(scope.row)" size="default">下载开题报告</el-button>
         </template>
       </el-table-column>
     </el-table>
     <br>
     <el-pagination v-model:current-page="pageNum" v-model:page-size="pageSize" :page-sizes="[5, 10, 20, 50]"
-      layout="sizes, prev, pager, next" :total="applicationData.length" @size-change="handleSizeChange"
+      layout="sizes, prev, pager, next" :total="proposalData.length" @size-change="handleSizeChange"
       @current-change="handleCurrentChange" />
   </el-card>
   <el-divider />
 
-  <el-dialog v-model="dialogVisible" title="新建申请" width="500" :before-close="handleClose">
-    <h1>选择导师</h1>
-    请选择导师：
-    <el-select v-model="value" placeholder="导师" size="large" style="width: 240px">
-      <el-option v-for="item in teacherData" :key="item.uid" :label="item.username" :value="item.uid" />
-    </el-select> &nbsp;
-    <el-divider />
-    <h1>(可选)上传《本科生毕业论文指导老师意向表》</h1>
+  <el-dialog v-model="dialogVisible" title="新建开题报告" width="500" :before-close="handleClose">
+    <h1>上传《本科生毕业论文（设计）开题报告》</h1>
     <el-upload v-model:file-list="fileList" :auto-upload="false" class="upload-demo" action=""
       :on-preview="handlePreview" :on-remove="handleRemove" :before-remove="beforeRemove" :limit="1"
       :on-exceed="handleExceed" :multiple="false">
@@ -53,7 +48,7 @@
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="dialogVisible = false">取消</el-button>
-        <el-button type="primary" @click="doApply">确认申请</el-button>
+        <el-button type="primary" @click="doApply">确认提交</el-button>
       </div>
     </template>
   </el-dialog>
@@ -100,23 +95,18 @@ const beforeRemove: UploadProps['beforeRemove'] = (uploadFile, uploadFiles) => {
 }
 
 const dialogVisible = ref(false)
-const applicationData = ref([])
+const proposalData = ref([])
 const teacherData = ref([])
 const value = ref('')
 const canApply = ref(true)
 
 const doApply = () => {
-  if (value.value == '') {
-    ElMessage.warning('请先选择导师！')
-    return
-  }
   let token = window.localStorage.getItem('token')
   axios({
     method: 'post',
-    url: '/api/application/add',
+    url: '/api/proposals/add',
     params: {
-      student_id: window.localStorage.getItem('uid'),
-      teacher_id: value.value
+      student_id: window.localStorage.getItem('uid')
     },
     headers: { 'Authorization': `Bearer ${token}` }
   }).then(function (res) {
@@ -126,10 +116,10 @@ const doApply = () => {
       if (fileList.value.at(0)) {
         let fd = new FormData()
         fd.append('file', fileList.value.at(0).raw)
-        fd.append('application_id', res.data.application_id)
+        fd.append('proposal_id', res.data.proposal_id)
         axios({
           method: 'post',
-          url: '/api/application/uploadPdf',
+          url: '/api/proposals/uploadPdf',
           data: fd,
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -163,12 +153,12 @@ const init = () => {
   let token = window.localStorage.getItem('token')
   axios({
     method: 'get',
-    url: '/api/application/get_by_student',
-    params: { student_id: window.localStorage.getItem('uid') },
+    url: '/api/proposals/student/' + window.localStorage.getItem('uid'),
     headers: { 'Authorization': `Bearer ${token}` }
   }).then(function (res) {
-    ElMessage.success('获取我的申请成功')
-    for (let item of res.data.application_list) {
+    console.log(res)
+    ElMessage.success('获取我的开题报告成功')
+    for (let item of res.data) {
       if (item.teacherPass === 0) {
         item.teacherPass = '未处理'
         canApply.value = false
@@ -184,10 +174,10 @@ const init = () => {
         active.value = 4
       }
     }
-    applicationData.value = res.data.application_list
+    proposalData.value = res.data
     console.log(res)
   }, err => {
-    ElMessage.error('获取我的申请失败')
+    ElMessage.error('获取我的开题报告失败')
     console.log(err)
   })
   axios({
@@ -202,9 +192,9 @@ const init = () => {
     console.log(err)
   })
   let currentDate = new Date()
-  let applicationEndDate = new Date('2023-11-17T00:00:01')
-  if (currentDate > applicationEndDate) {
-    ElMessageBox.alert('您已超过时限，无法申请导师了！', '警告', {
+  let proposalEndDate = new Date('2023-12-27T00:00:01')
+    if (currentDate > proposalEndDate) {
+    ElMessageBox.alert('您已超过时限，无法提交开题报告了！', '警告', {
       confirmButtonText: 'OK',
     })
     canApply.value = false
@@ -220,15 +210,15 @@ const download = (row: any) => {
   let token = window.localStorage.getItem('token')
   axios({
     method: 'get',
-    url: '/api/application/getPDF',
-    params: { application_id: row.applicationId },
+    url: '/api/proposals/getPDF',
+    params: { proposal_id: row.proposalId },
     responseType: 'blob',
     headers: { 'Authorization': `Bearer ${token}`, }
   }).then(function (res) {
     const link = document.createElement('a');
     const blob = new Blob([res.data]);
     link.href = window.URL.createObjectURL(blob);
-    link.download = `第${row.applicationId}号申请.pdf`;
+    link.download = `第${row.proposalId}号开题报告.pdf`;
     link.style.display = 'none';
     document.body.appendChild(link);
     link.click();

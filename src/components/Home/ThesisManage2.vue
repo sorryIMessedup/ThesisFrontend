@@ -8,22 +8,29 @@
     <span v-else>通过导师审批的论文将在这里，您将进行论文最后的审批。</span>
     <el-divider />
     <el-table stripe :data="thesisData.slice((pageNum - 1) * pageSize, pageNum * pageSize)" style="" :border="false">
-      <el-table-column fixed prop="thesisId" label="论文ID" width="100" />
-      <el-table-column prop="studentId" label="学生ID" width="100" />
+      <el-table-column fixed prop="thesisId" label="论文ID" width="70" />
+      <el-table-column prop="studentId" label="学生ID" width="70" />
       <el-table-column prop="title" label="标题" width="200" />
       <el-table-column prop="teacherPass" label="状态" width="100" v-if="auth == '1'" />
       <el-table-column prop="deanPass" label="状态" width="100" v-if="auth == '2'" />
-      <el-table-column prop="" label="操作" min-width="270" v-if="auth == '1'">
+      <el-table-column prop="" label="操作" width="600" v-if="auth == '1'">
         <template #default="scope">
-          <el-button type="primary" @click="agree(scope.row)" :disabled="scope.row.teacherPass == '已通过' || !canApply1">通过</el-button>
-          <el-button type="danger" @click="refuse(scope.row)" :disabled="scope.row.teacherPass == '已拒绝' || !canApply1">拒绝</el-button>
+          <el-button type="primary" @click="agree(scope.row)"
+            :disabled="scope.row.teacherPass == '已通过' || !canApply1">通过</el-button>
+          <el-button type="danger" @click="refuse(scope.row)"
+            :disabled="scope.row.teacherPass == '已拒绝' || !canApply1">拒绝</el-button>
           <el-button type="default" @click="download(scope.row)">下载论文</el-button>
+          <el-button type="default" @click="progress(scope.row)">评价进度</el-button>
+          <el-button type="default" @click="quality(scope.row)">评价质量</el-button>
+          <el-button type="default" @click="opinion(scope.row)">指导意见</el-button>
         </template>
       </el-table-column>
       <el-table-column prop="" label="操作" min-width="270" v-if="auth == '2'">
         <template #default="scope">
-          <el-button type="primary" @click="agree(scope.row)" :disabled="scope.row.deanPass == '已通过' || !canApply2">通过</el-button>
-          <el-button type="danger" @click="refuse(scope.row)" :disabled="scope.row.deanPass == '已拒绝' || !canApply2">拒绝</el-button>
+          <el-button type="primary" @click="agree(scope.row)"
+            :disabled="scope.row.deanPass == '已通过' || !canApply2">通过</el-button>
+          <el-button type="danger" @click="refuse(scope.row)"
+            :disabled="scope.row.deanPass == '已拒绝' || !canApply2">拒绝</el-button>
           <el-button type="default" @click="download(scope.row)">下载论文</el-button>
         </template>
       </el-table-column>
@@ -213,6 +220,77 @@ const download = (row: any) => {
   }, err => {
     ElMessage.error('下载失败')
     console.log(err)
+  })
+}
+
+const progress = (row: any) => {
+  let token = window.localStorage.getItem('token')
+  ElMessageBox.prompt('请输入进度', '评价进度', {
+    confirmButtonText: 'OK',
+    cancelButtonText: 'Cancel',
+  }).then(({ value }) => {
+    axios({
+      method: 'post',
+      url: '/api/thesis/update_progress',
+      params: {
+        thesis_id: row.proposalId,
+        progress: value
+      },
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).then(function (res) {
+      ElMessage.success('评价成功')
+      console.log(res)
+    }, err => {
+      ElMessage.error('评价失败')
+      console.log(err)
+    })
+  })
+}
+
+const quality = (row: any) => {
+  let token = window.localStorage.getItem('token')
+  ElMessageBox.prompt('请输入质量', '评价质量', {
+    confirmButtonText: 'OK',
+    cancelButtonText: 'Cancel',
+  }).then(({ value }) => {
+    axios({
+      method: 'post',
+      url: '/api/thesis/update_quality',
+      params: {
+        thesis_id: row.proposalId,
+        quality: value
+      },
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).then(function (res) {
+      ElMessage.success('评价成功')
+      console.log(res)
+    }, err => {
+      ElMessage.error('评价失败')
+      console.log(err)
+    })
+  })
+}
+const opinion = (row: any) => {
+  let token = window.localStorage.getItem('token')
+  ElMessageBox.prompt('请输入意见', '指导意见', {
+    confirmButtonText: 'OK',
+    cancelButtonText: 'Cancel',
+  }).then(({ value }) => {
+    axios({
+      method: 'post',
+      url: '/api/thesis/update_opinion',
+      params: {
+        thesis_id: row.proposalId,
+        opinion: value
+      },
+      headers: { 'Authorization': `Bearer ${token}` }
+    }).then(function (res) {
+      ElMessage.success('评价成功')
+      console.log(res)
+    }, err => {
+      ElMessage.error('评价失败')
+      console.log(err)
+    })
   })
 }
 

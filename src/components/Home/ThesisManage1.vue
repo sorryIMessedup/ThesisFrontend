@@ -21,15 +21,18 @@
     <el-divider />
     <el-table stripe :data="thesisData.slice((pageNum - 1) * pageSize, pageNum * pageSize)" style="" :border="false">
       <el-table-column fixed prop="thesisId" label="论文ID" width="70" />
-      <el-table-column prop="teacherId" label="导师ID" width="100" />
-      <el-table-column prop="title" label="标题" />
+      <el-table-column fixed prop="teacherId" label="导师ID" width="100" />
+      <el-table-column fixed prop="title" label="标题" width="200" />
       <el-table-column prop="result" label="查重率" width="70" />
       <el-table-column prop="teacherPass" label="导师审批" width="80" />
       <el-table-column prop="deanPass" label="教务审批" width="100" />
-      <el-table-column prop="" label="操作" width="160">
+      <el-table-column prop="" label="操作" width="470">
         <template #default="scope">
           <el-button type="default" @click="doModify(scope.row)" size="default" :disabled="!canApply">编辑</el-button>
-          <el-button type="primary" @click="download(scope.row)" size="default" :disabled="!canApply">下载</el-button>
+          <el-button type="primary" @click="download(scope.row)" size="default" >下载</el-button>
+          <el-button type="default" @click="progress(scope.row)" size="default" >查看进度</el-button>
+          <el-button type="default" @click="quality(scope.row)" size="default" >查看质量</el-button>
+          <el-button type="default" @click="opinion(scope.row)" size="default" >查看意见</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -70,7 +73,7 @@
 import axios from 'axios';
 import { onMounted, ref } from 'vue';
 import { ElMessage, ElMessageBox } from 'element-plus';
-import type { UploadProps, UploadUserFile } from 'element-plus'
+import type { Action, UploadProps, UploadUserFile } from 'element-plus'
 
 const fileList = ref<UploadUserFile[]>([])
 const pageNum = ref(1)
@@ -281,6 +284,24 @@ const init = () => {
     canApply.value = false
     return
   }
+}
+
+const progress= (row: any) => {
+  ElMessageBox.alert(`${row.progress}`, '查看进度', {
+    confirmButtonText: 'OK',
+  })
+}
+
+const quality = (row: any) => {
+  ElMessageBox.alert(`${row.quality}`, '查看质量', {
+    confirmButtonText: 'OK',
+  })
+}
+
+const opinion = (row: any) => {
+  ElMessageBox.alert(`${row.opinion}`, '查看意见', {
+    confirmButtonText: 'OK',
+  })
 }
 
 onMounted(() => {

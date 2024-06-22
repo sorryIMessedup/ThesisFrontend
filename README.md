@@ -1,6 +1,6 @@
 # ThesisFrontend
 
-This template should help get you started developing with Vue 3 in Vite.
+This project is developed with Vue 3 in Vite. 请注意在 `vite.config.js` 中，本项目设置了 `/api` 指向 `localhost:8081` 的代理。也许你需要根据你的情况来更改这个设置。
 
 ## Recommended IDE Setup
 

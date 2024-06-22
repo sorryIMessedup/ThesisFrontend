@@ -111,4 +111,15 @@ const handleClose = (key: string, keyPath: string[]) => {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.el-menu {
+  --el-menu-bg-color: #53595E;
+  --el-menu-hover-bg-color: rgb(63, 68, 72);
+  --el-menu-text-color: rgb(204, 205, 207);
+  --el-menu-active-color: white;
+}
+
+.el-menu-item {
+  color: white;
+}
+</style>

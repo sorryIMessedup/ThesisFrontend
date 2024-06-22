@@ -1,9 +1,13 @@
 <template>
   <div class="header-left">
-    <h1>论文系统</h1>
+    <div style="display: flex; align-items: center;">
+      <img src="@/assets/logo.png" style="width: 60px; height: 60px; padding-right: 15px;"></img>
+      <h1>论文系统</h1>
+    </div>
+
   </div>
   <div class="header-right">
-    <span style="padding-right: 50px;">欢迎您, {{ username }}</span>
+    <span style="padding-right: 50px; color: black;">欢迎您, {{ username }}</span>
     <el-button size="large" @click="dialogVisible1 = true">修改密码</el-button>&nbsp;
     <el-button size="large" @click="dialogVisible2 = true">修改用户名</el-button>
   </div>

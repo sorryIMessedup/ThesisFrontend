@@ -22,14 +22,16 @@ import { RouterView } from 'vue-router'
 .el-header {
   display: flex;
   align-items: center;
-  background-color: #373D41;
-  color: white;
+  background-color: white;
+  box-shadow: inset 0px -1px 5px gray;
+  color: rgb(183, 0, 49);
   display: flex;
   height: 80px;
 }
 
 .el-aside {
-  background-color: #333744;
+  background-color: rgb(83,89,94);
+  color: white;
 }
 
 .el-main {
